@@ -27,7 +27,7 @@ reference=/fh/fast/dai_j/CancerGenomics/Tools/database/reference/full/ucsc.hg19.
 echo "samtools mpileup -B -q 1 -f $reference -r $chr $normalbam >${SCRATCH_LOCAL}/${normalname}_$chr.mpileup"
 samtools mpileup -B -q 1 -f $reference -r $chr $normalbam >${SCRATCH_LOCAL}/${normalname}_$chr.mpileup
 samtools mpileup -B -q 1 -f $reference -r $chr $tumorbam >${SCRATCH_LOCAL}/${tumorname}_$chr.mpileup
-echo "java -Xmx512m -jar $varscancmd somatic ${SCRATCH_LOCAL}/${normalname}_$chr.mpileup ${SCRATCH_LOCAL}/${tumorname}_$chr.mpileup ${tumorname}_$chr -–min-coverage 10 --min-var-freq 0.1 -–somatic-p-value 0.05 --strand-filter 0  --min-avg-qual 0"
+echo "java -Xmx512m -jar $varscancmd somatic ${SCRATCH_LOCAL}/${normalname}_$chr.mpileup ${SCRATCH_LOCAL}/${tumorname}_$chr.mpileup ${tumorname}_$chr -–min-coverage 10 --min-var-freq 0.1 -–somatic-p-value 0.05 --min-avg-qual 0"
 java -Xmx512m -jar $varscancmd somatic ${SCRATCH_LOCAL}/${normalname}_$chr.mpileup ${SCRATCH_LOCAL}/${tumorname}_$chr.mpileup ${tumorname}_$chr --min-coverage 10 --min-var-freq 0.1 --somatic-p-value 0.05 --strand-filter 0 --min-avg-qual 0
 echo "java -Xmx256m -jar $varscancmd processSomatic ${tumorname}_$chr.snp --min-tumor-freq 0.1 --p-value 0.05"
 java -Xmx256m -jar $varscancmd processSomatic ${tumorname}_$chr.snp --min-tumor-freq 0.1 --p-value 0.05
