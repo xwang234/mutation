@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-#SBATCH -t 3-5
+#SBATCH -t 5-5
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=xwang234@fhcrc.org
 
@@ -23,7 +23,8 @@ normalbam=${1?"normalbam"}
 tumorbam=${2?"tumorbam"}
 tumorname=${3?"tumorname"} #preface of output
 outputdir=${4?"outputdir"}
-qmin=${5:-"1"} #min q value filter set as 1 10 20
+qmin=${5:-"1"} #min base quality value filter set as 1 10 20
+mapmin=${6:-"1"} #min mapping quality score filter
 
 cd $outputdir
 echo $normalbam
@@ -35,7 +36,19 @@ output=$outputdir/${tumorname}.Mutect_out.txt
 outputvcf=$outputdir/${tumorname}.Mutect.vcf
 outputwig=$outputdir/${tumorname}.wig.txt
 
-java $java_opts -jar $mutect --analysis_type MuTect --reference_sequence $reference --cosmic $cosmic --dbsnp $dbsnp --min_qscore $qmin --input_file:normal $normalbam --input_file:tumor $tumorbam --out $output --vcf $outputvcf --coverage_file $outputwig --enable_extended_output #-nct ${SLURM_CPUS_ON_NODE}
+filtermap0=1
+if [[ $filtermap0 -eq 1 ]]
+then
+  samtools view -hb -F 4 -q 1 $normalbam >${SCRATCH_LOCAL}/N_${tumorname}.bam
+  ls -l ${SCRATCH_LOCAL}/N_${tumorname}.bam
+  samtools index ${SCRATCH_LOCAL}/N_${tumorname}.bam
+  samtools view -hb -F 4 -q 1 $tumorbam >${SCRATCH_LOCAL}/${tumorname}.bam
+  ls -l ${SCRATCH_LOCAL}/${tumorname}.bam
+  samtools index ${SCRATCH_LOCAL}/${tumorname}.bam
+  java $java_opts -jar $mutect --analysis_type MuTect --reference_sequence $reference --cosmic $cosmic --dbsnp $dbsnp --min_qscore $qmin --required_maximum_alt_allele_mapping_quality_score $mapmin --input_file:normal ${SCRATCH_LOCAL}/N_${tumorname}.bam --input_file:tumor ${SCRATCH_LOCAL}/${tumorname}.bam --out $output --vcf $outputvcf --coverage_file $outputwig --enable_extended_output #-nct ${SLURM_CPUS_ON_NODE}
+else
+  java $java_opts -jar $mutect --analysis_type MuTect --reference_sequence $reference --cosmic $cosmic --dbsnp $dbsnp --min_qscore $qmin --required_maximum_alt_allele_mapping_quality_score $mapmin --input_file:normal $normalbam --input_file:tumor $tumorbam --out $output --vcf $outputvcf --coverage_file $outputwig --enable_extended_output #-nct ${SLURM_CPUS_ON_NODE}
+fi
 
 grep -v REJECT $output | awk '{if (NR>1) print }' - > ${tumorname}.Mutect_out_keep.txt
 perl $transformat ${tumorname}.Mutect_out_keep.txt >${tumorname}.Mutect_annovar.txt
