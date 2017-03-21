@@ -3,7 +3,7 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=xwang234@fhcrc.org
 
-source /etc/profile.d/fh_path.sh
+#source /etc/profile.d/fh_path.sh
 #Mutect not work with jdk1.7
 module load java/jdk1.6.0_45
 
@@ -31,12 +31,13 @@ echo $normalbam
 echo $tumorbam
 echo $tumorname
 echo ${SLURM_CPUS_ON_NODE}
+echo ${SCRATCH_LOCAL}
 
 output=$outputdir/${tumorname}.Mutect_out.txt
 outputvcf=$outputdir/${tumorname}.Mutect.vcf
 outputwig=$outputdir/${tumorname}.wig.txt
 
-filtermap0=1
+filtermap0=0
 if [[ $filtermap0 -eq 1 ]]
 then
   samtools view -hb -F 4 -q 1 $normalbam >${SCRATCH_LOCAL}/N_${tumorname}.bam

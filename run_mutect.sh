@@ -1,8 +1,10 @@
 #! /usr/bin/env bash
 
-data=dulak
+data=henan
 echo $data
 sleep 10
+qmin=10 
+mapmin=10
 
 if [[ $data == "dulak" ]]
 then
@@ -11,13 +13,14 @@ then
   bamdir=/fh/scratch/delete30/dai_j/dulak
   outputdir=/fh/scratch/delete30/dai_j/mutect3
   #mutect3: qmin=10,mapmin=10,q1
-  for ((i=0;i<${#wgstumors[@]};i++))
+  #for ((i=0;i<${#wgstumors[@]};i++))
+  for i in {5,3,9,8,10,11,12}
   do
     normalbam=$bamdir/${wgsnormals[$i]}.dedup.realigned.recal.bam
     tumorbam=$bamdir/${wgstumors[$i]}.dedup.realigned.recal.bam
     tumorname=${wgstumors[$i]}
-    echo sbatch /fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/mutect.sh $normalbam $tumorbam $tumorname $outputdir
-    sbatch /fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/mutect.sh $normalbam $tumorbam $tumorname $outputdir
+    echo sbatch /fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/mutect.sh $normalbam $tumorbam $tumorname $outputdir $qmin $mapmin
+    sbatch /fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/mutect.sh $normalbam $tumorbam $tumorname $outputdir $qmin $mapmin
     sleep 1
   done
 
@@ -27,16 +30,18 @@ if [[ $data == "henan" ]]
 then
   wgsnormals=(4A 12A 14A 16A 18A 26A 30A 34A 38A 42A)
   wgstumors=(3A 11A 13A 15A 17A 25A 29A 33A 37A 41A)
-  #bamdir=/fh/scratch/delete30/dai_j/henan
-  bamdir=/fh/scratch/delete30/dai_j/henan/newbam
+  bamdir=/fh/scratch/delete30/dai_j/henan
+  #bamdir=/fh/scratch/delete30/dai_j/henan/newbam
+  outputdir=/fh/scratch/delete30/dai_j/henan/mutect1
   #outputdir=/fh/scratch/delete30/dai_j/henan/mutect3
-  outputdir=/fh/scratch/delete30/dai_j/henan/mutectnewq1
+  #outputdir=/fh/scratch/delete30/dai_j/henan/mutectnewq1
+  #outputdir=/fh/scratch/delete30/dai_j/henan/mutectnew
   #mutect3: qmin=10,mapmin=10,q1
-  qmin=10 
-  mapmin=10
+  #mutect1: qmin=10,mapmin=10,filtermap0=0 (q0)
+ 
 
-  #for ((i=0;i<${#wgstumors[@]};i++))
-  for ((i=0;i<1;i++))
+  for ((i=0;i<${#wgstumors[@]};i++))
+  #for ((i=1;i<2;i++))
   do
     normalbam=$bamdir/${wgsnormals[$i]}.merged.deduprealigned.bam
     tumorbam=$bamdir/${wgstumors[$i]}.merged.deduprealigned.bam
