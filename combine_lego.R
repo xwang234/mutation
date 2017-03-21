@@ -3,7 +3,9 @@
 #henan
 #mutationdir="/fh/scratch/delete30/dai_j/henan/varscan1"
 mutationdir="/fh/scratch/delete30/dai_j/henan/varscan2"
+mutationdir="/fh/scratch/delete30/dai_j/henan/mutect3"
 output="henan_golden4_varscan_lego.txt"
+output="henan_mutect3_lego.txt"
 wgstumors=c("3A","11A","13A","15A")
 wgstumors=c("3A","11A","13A","15A","17A","25A","29A","33A","37A","41A")
 
@@ -21,7 +23,8 @@ wgstumors=c("SRR1001842","SRR1002713","SRR999423","SRR1001466","SRR1002670","SRR
 
 for (i in 1:length(wgstumors))
 {
-  legofile=paste0(mutationdir,"/",wgstumors[i],".snp.Somatic.hc.lego.txt")
+  #legofile=paste0(mutationdir,"/",wgstumors[i],".snp.Somatic.hc.lego.txt")
+  legofile=paste0(mutationdir,"/",wgstumors[i],".lego.txt")
   tmp=read.table(legofile,header=T,sep="\t")
   if (i==1)
   {

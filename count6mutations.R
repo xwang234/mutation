@@ -417,11 +417,19 @@ wgstumors=c("SRR1001842","SRR1002713","SRR999423","SRR1001466","SRR1002670","SRR
 #/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/varscan2/SRR1001635.snp.Somatic.hc 1 2 3 4 T SRR1001635.snp.Somatic.hc 0
 
 
-
-
-
-
-
+#3/15
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutectnew/3A.variant_function 3 4 6 7 F 3A 0
+##/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutectnewq1/3A.variant_function 3 4 6 7 F 3A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/3A.variant_function 3 4 6 7 F 3A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/11A.variant_function 3 4 6 7 F 11A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/13A.variant_function 3 4 6 7 F 13A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/15A.variant_function 3 4 6 7 F 15A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/17A.variant_function 3 4 6 7 F 17A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/25A.variant_function 3 4 6 7 F 25A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/29A.variant_function 3 4 6 7 F 29A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/33A.variant_function 3 4 6 7 F 33A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/37A.variant_function 3 4 6 7 F 37A 0
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/41A.variant_function 3 4 6 7 F 41A 0
 
 
 

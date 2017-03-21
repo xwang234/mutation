@@ -138,6 +138,9 @@ numsample=10
 rawdata=read.table("/fh/scratch/delete30/dai_j/henan/varscan2/henan_golden4_varscan_lego.txt",header=T)
 numsample=4
 
+rawdata=read.table("/fh/scratch/delete30/dai_j/henan/mutect3/henan_mutect3_lego.txt",header=T)
+numsample=10
+
 #escc data:
 rawdata=read.table("/fh/scratch/delete30/dai_j/escc/varscan2/escc_varscan_lego.txt",header=T)
 numsample=17
@@ -159,6 +162,8 @@ context3d(z=counts,filename="dulak.all.lego")
 context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/varscan1/henan_varscan_lego" )
 #henan data
 context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/varscan2/henan_varscan_lego")
+context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/mutect3/henan_mutect3_lego")
+
 #golden4
 context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/varscan2/henan_golden4_varscan_lego")
 

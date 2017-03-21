@@ -156,8 +156,8 @@ grp1tumors=c('SRR1001842','SRR1002713','SRR999423','SRR1001466','SRR1002670','SR
 grp2normals=paste0((c(3,11,13,15,17,25,29,33,37,41)+1),"A")
 grp2tumors=paste0(c(3,11,13,15,17,25,29,33,37,41),"A")
 
-grp1dir="/fh/scratch/delete30/dai_j/varscan"
-grp2dir="/fh/scratch/delete30/dai_j/henan/varscan"
+grp1dir="/fh/scratch/delete30/dai_j/mutect1"
+grp2dir="/fh/scratch/delete30/dai_j/henan/mutect3"
 #compute transrate and lego
 computeall=function(grpdir,grptumors)
 {
@@ -172,17 +172,13 @@ computeall=function(grpdir,grptumors)
   for (i in 1:length(grptumors))
   {
     print(grptumors[i])
-    maffile=paste0(grpdir,"/",grptumors[i],".snp.Somatic.hc.annotated")
-    if (! file.exists(maffile))
-    {
-      maffile=paste0(grpdir,"/",grptumors[i],".somatic.snp.Somatic.annotated")
-    }
+    maffile=paste0(grpdir,"/",grptumors[i],".mutectmaf.ancotator")
     maftable=read.table(maffile,header=T,sep="\t",quote="")
     maftable$Variant_Classification=as.character(maftable$Variant_Classification)
-    colchr=5
-    colstart=6
-    colref=11
-    colalt=13
+    colchr=which(colnames(maftable)=="Chromosome")
+    colstart=which(colnames(maftable)=="Start_position")
+    colref=which(colnames(maftable)=="Reference_Allele")
+    colalt=which(colnames(maftable)=="Tumor_Seq_Allele2")
     result=countmutations_fromtable(maftable,colchr,colstart,colref,colalt)
     transratemat[,i]=result$transrate
     transcount[,i]=result$transcount
@@ -201,7 +197,7 @@ computeall=function(grpdir,grptumors)
 
 dulak_res=computeall(grp1dir,grp1tumors)
 henan_res=computeall(grp2dir,grp2tumors)
-#save(dulak_res,henan_res,file="tmp.RData")
+#save(dulak_res,henan_res,file="compare_globals_2grps_mutect.RData")
 
 # #table to keep SRR->ESO naming transversion
 dulaktable=read.table(file="/fh/fast/dai_j/CancerGenomics/EAC/Dulak_fileinfo.txt",header=T)

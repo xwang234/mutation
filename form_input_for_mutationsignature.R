@@ -7,8 +7,7 @@ colchr=as.integer(args[2])
 colstart=as.integer(args[3])
 colref=as.integer(args[4])
 colalt=as.integer(args[5])
-colsamplename=as.integer(args[6])
-pref=as.character(args[7])
+pref=as.character(args[6])
 
 print(mutectdir)
 print(pref)
@@ -21,21 +20,28 @@ print(output_mutationmatrix)
 print(output_samplename)
 print(output_inputmfile)
 print(output_inputmatfile)
-  
-maffiles=c()
-for (i in 8:length(args))
+
+numsamples=(length(args)-6)/2
+print(numsamples)
+tumors=c()
+for (i in 7:(6+numsamples))
 {
-  maffiles[i-7]=as.character(args[i])
-  print(maffiles[i-7])
+  tumors[i-6]=as.character(args[i])
+} 
+maffiles=c()
+for (i in (7+numsamples):length(args))
+{
+  maffiles[i-6-numsamples]=as.character(args[i])
+  print(maffiles[i-6-numsamples])
 }
 
-countmutations=function(maffile,header=F,colchr,colstart,colref,colalt,colsamplename=NULL,pref=NULL,write2files=0)
+countmutations=function(maffile,header=F,colchr,colstart,colref,colalt,samplename=NULL,pref=NULL,write2files=0)
 {
   library(GenomicRanges)
   library(BSgenome)
   library("BSgenome.Hsapiens.UCSC.hg19")
   maftable=read.table(maffile,sep="\t",header=header)
-  samplename=as.character(maftable[1,colsamplename])
+  #samplename=as.character(maftable[1,colsamplename])
   chrs=paste0("chr",c(1:22,"X","Y"))
   
   if (!grepl("chr",maftable[1,colchr]))
@@ -199,7 +205,7 @@ samplenames=data.frame(matrix(NA,ncol=1,nrow=length(maffiles)))
 samplenames[,1]=as.character(samplenames[,1])
 for (i in 1:length(maffiles))
 {
-  resultlist=countmutations(maffiles[i],header=F,colchr,colstart,colref,colalt,colsamplename,pref,write2files=0)
+  resultlist=countmutations(maffiles[i],header=F,colchr,colstart,colref,colalt,samplename=tumors[i],pref,write2files=0)
   mutationmatrix[,i]=formdata(resultlist$convmat)
   samplenames[i,1]=resultlist$samplename
   print(samplenames[i,1])
