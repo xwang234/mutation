@@ -145,20 +145,73 @@ includedtypes2=c("Missense_Mutation","Nonsense_Mutation","Frame_Shift_Del","Fram
                  "Splice_Site","Translation_Start_Site","Nonstop_Mutation","Targeted_Region","De_novo_Start_InFrame","De_novo_Start_OutOfFrame")
 
 
-#grp1normals=c('SRR1002719','SRR999433','SRR999687','SRR1000378','SRR1002786','SRR999559','SRR1001730','SRR10018461','SRR1002703','SRR999599','SRR1002792','SRR1001839','SRR9994281','SRR1002710','SRR9995631')
-#grp1tumors=c('SRR1001842','SRR1002713','SRR999423','SRR1001466','SRR1002670','SRR1001823','SRR999489','SRR1002343','SRR1002722','SRR1002656','SRR1002929','SRR999438','SRR1001915','SRR999594','SRR1001868')
-
 grp1normals=c('SRR1002719','SRR999433','SRR999687','SRR1000378','SRR1002786','SRR999559','SRR1001730','SRR10018461','SRR1002703','SRR999599','SRR1002792','SRR1001839','SRR9994281','SRR1002710','SRR9995631','SRR1021476')
 grp1tumors=c('SRR1001842','SRR1002713','SRR999423','SRR1001466','SRR1002670','SRR1001823','SRR999489','SRR1002343','SRR1002722','SRR1002656','SRR1002929','SRR999438','SRR1001915','SRR999594','SRR1001868','SRR1001635')
 
+#grp1normals=c('SRR1002719','SRR999433','SRR999687','SRR1000378','SRR1002786','SRR999559','SRR1001730','SRR10018461','SRR1002703','SRR999599','SRR1002792','SRR1001839','SRR9994281','SRR1002710','SRR9995631')
+#grp1tumors=c('SRR1001842','SRR1002713','SRR999423','SRR1001466','SRR1002670','SRR1001823','SRR999489','SRR1002343','SRR1002722','SRR1002656','SRR1002929','SRR999438','SRR1001915','SRR999594','SRR1001868')
 #grp2normals=c('2A','4A','6A','8A','10A','12A')
 #grp2tumors=c('1A','3A','5A','7A','9A','11A')
 grp2normals=paste0((c(3,11,13,15,17,25,29,33,37,41)+1),"A")
 grp2tumors=paste0(c(3,11,13,15,17,25,29,33,37,41),"A")
+grp3tumors=paste0("T",c(1:6,8:18))
 
 grp1dir="/fh/scratch/delete30/dai_j/mutect1"
 grp2dir="/fh/scratch/delete30/dai_j/henan/mutect3"
+grp3dir="/fh/scratch/delete30/dai_j/escc/varscan2"
+
 #compute transrate and lego
+# computeall=function(grpdir,grptumors,opt="all")
+# {
+#   transcount=transcount_snv=transratemat=transrate_snv_mat=data.frame(matrix(NA,nrow=7,ncol=length(grptumors)))
+#   rownames(transcount)=rownames(transcount_snv)=rownames(transratemat)=rownames(transrate_snv_mat)=c('c2t','c2a','c2g','a2g','a2c','a2t','aa2c')
+#   colnames(transcount)=colnames(transcount_snv)=colnames(transratemat)=colnames(transrate_snv_mat)=grptumors
+#   legomat=lego_snv_mat=data.frame(matrix(NA,nrow=length(grptumors),ncol=96))
+#   rownames(legomat)=rownames(lego_snv_mat)=grptumors
+#   nummutation=nummutation_snv=data.frame(matrix(0,nrow=length(grptumors),ncol=1))
+#   rownames(nummutation)=rownames(nummutation_snv)=grptumors
+#   
+#   for (i in 1:length(grptumors))
+#   {
+#     print(grptumors[i])
+#     maffile=paste0(grpdir,"/",grptumors[i],".snp.Somatic.hc.annotated")
+#     if (! file.exists(maffile))
+#     {
+#       maffile=paste0(grpdir,"/",grptumors[i],".somatic.snp.Somatic.annotated")
+#       if (! file.exists(maffile))
+#       {
+#         maffile=paste0(grpdir,"/",grptumors[i],".snp.Somatic.hc.oncotator")
+#       }
+#     }
+#     maftable=read.table(maffile,header=T,sep="\t",quote="",stringsAsFactors=F)
+#     if (opt =="normalvar")
+#     {
+#       maftable$normal_var_freq=as.numeric(gsub("%","",maftable$normal_var_freq))/100
+#       num_normalvar=(maftable$normal_reads1+maftable$normal_reads2)*maftable$normal_var_freq
+#       idx=num_normalvar<=2
+#       maftable=maftable[idx,]
+#     }
+#     
+#     maftable$Variant_Classification=as.character(maftable$Variant_Classification)
+#     colchr=5
+#     colstart=6
+#     colref=11
+#     colalt=13
+#     result=countmutations_fromtable(maftable,colchr,colstart,colref,colalt)
+#     transratemat[,i]=result$transrate
+#     transcount[,i]=result$transcount
+#     legomat[i,]=result$lego
+#     colnames(legomat)=colnames(lego_snv_mat)=names(result$lego)
+#     nummutation[i,1]=nrow(maftable)
+#     maftable_snv=maftable[maftable$Variant_Classification %in% includedtypes2,]
+#     result_snv=countmutations_fromtable(maftable_snv,colchr,colstart,colref,colalt)
+#     transrate_snv_mat[,i]=result_snv$transrate
+#     transcount_snv[,i]=result_snv$transcount
+#     lego_snv_mat[i,]=result_snv$lego
+#     nummutation_snv[i,1]=nrow(maftable_snv)
+#   }
+#   results=list(transratemat=transratemat,transcount=transcount,legomat=legomat,nummutation=nummutation,transrate_snv_mat=transrate_snv_mat,transcount_snv=transcount_snv,lego_snv_mat=lego_snv_mat,nummutation_snv=nummutation_snv)
+# }
 computeall=function(grpdir,grptumors)
 {
   transcount=transcount_snv=transratemat=transrate_snv_mat=data.frame(matrix(NA,nrow=7,ncol=length(grptumors)))
@@ -197,44 +250,37 @@ computeall=function(grpdir,grptumors)
 
 dulak_res=computeall(grp1dir,grp1tumors)
 henan_res=computeall(grp2dir,grp2tumors)
-#save(dulak_res,henan_res,file="compare_globals_2grps_mutect.RData")
+escc_res=computeall(grp3dir,grp3tumors)
+# dulak_normalvar_res=computeall(grp1dir,grp1tumors,opt="normalvar")
+# henan_normalvar_res=computeall(grp2dir,grp2tumors,opt="normalvar")
+# escc_normalvar_res=computeall(grp3dir,grp3tumors,opt="normalvar")
 
+#save(dulak_res,henan_res,escc_res,file="compare_globals_3grps_mutect.RData")
+#load("tmp1.RData")
 # #table to keep SRR->ESO naming transversion
-dulaktable=read.table(file="/fh/fast/dai_j/CancerGenomics/EAC/Dulak_fileinfo.txt",header=T)
-esotranstable=data.frame(matrix(NA,ncol=4,nrow=nrow(dulaktable)))
-dulaktable[,5]=as.character(dulaktable[,5])
-colnames(esotranstable)=c("srr","eso","type","wgs")
-esotranstable[,1]=as.character(dulaktable[,3])
-esotranstable[,4]=dulaktable[,9] #wgs:1,wes:0
-for (i in 1:nrow(dulaktable))
-{
- tmp=unlist(strsplit(dulaktable[i,5],'-'))
- esotranstable[i,2]=paste0(tmp[[1]],"-",tmp[[2]])
- esotranstable[i,3]=tmp[[3]]
-}
-
-dulakstable2=read.table(file="/fh/fast/dai_j/CancerGenomics/EAC/Dulak_Stable2.txt",header=T)
-srridx=rep(0,length(grp1tumors))
-for (i in 1:length(grp1tumors))
-{
-  tmp=which(esotranstable[,1]==grp1tumors[i])
-  tmp1=esotranstable[tmp,2]
-  srridx[i]=which(dulakstable2[,1]==tmp1)
-}
-#transfer into grp1's order
-srrdulakstable2=dulakstable2[srridx,]
-
-dulakstable3=read.table(file="/fh/fast/dai_j/CancerGenomics/EAC/Dulak_Stable3.txt",header=T)
-srridx=rep(0,length(grp1tumors))
-for (i in 1:length(grp1tumors))
-{
-  tmp=which(esotranstable[,1]==grp1tumors[i])
-  tmp1=esotranstable[tmp,2]
-  srridx[i]=which(dulakstable3[,1]==tmp1)
-}
-#transfer into grp1's order
-srrdulakstable3=dulakstable3[srridx,]
-
+# dulaktable=read.table(file="/fh/fast/dai_j/CancerGenomics/EAC/Dulak_fileinfo.txt",header=T)
+# esotranstable=data.frame(matrix(NA,ncol=4,nrow=nrow(dulaktable)))
+# dulaktable[,5]=as.character(dulaktable[,5])
+# colnames(esotranstable)=c("srr","eso","type","wgs")
+# esotranstable[,1]=as.character(dulaktable[,3])
+# esotranstable[,4]=dulaktable[,9] #wgs:1,wes:0
+# for (i in 1:nrow(dulaktable))
+# {
+#  tmp=unlist(strsplit(dulaktable[i,5],'-'))
+#  esotranstable[i,2]=paste0(tmp[[1]],"-",tmp[[2]])
+#  esotranstable[i,3]=tmp[[3]]
+# }
+# 
+# dulakstable2=read.table(file="/fh/fast/dai_j/CancerGenomics/EAC/Dulak_Stable2.txt",header=T)
+# srridx=rep(0,length(grp1tumors))
+# for (i in 1:length(grp1tumors))
+# {
+#   tmp=which(esotranstable[,1]==grp1tumors[i])
+#   tmp1=esotranstable[tmp,2]
+#   srridx[i]=which(dulakstable2[,1]==tmp1)
+# }
+# #transfer into grp1's order
+# srrdulakstable2=dulakstable2[srridx,]
 # 
 # dulakstable6=read.table(file="/fh/fast/dai_j/CancerGenomics/EAC/Dulak_Stable6.txt",header=T)
 # srridx1=rep(0,length(grp1tumors))
@@ -251,8 +297,12 @@ srrdulakstable3=dulakstable3[srridx,]
 computep=function(x,y)
 {
   
-  print(mean(x))
-  print(mean(y))
+  print(paste0("meanx:",mean(x)))
+  print(paste0("meany:",mean(y)))
+  print(paste0("medianx:",median(x)))
+  print(paste0("mediany:",median(y)))
+  print(paste0("rangex:",range(x)))
+  print(paste0("rangey:",range(y)))
   p=2*(1-pnorm(abs((mean(x)-mean(y))/sqrt(var(x)/length(x) + var(y)/length(y)))))
   res=list(min1=min(x,na.rm=T),max1=max(x,na.rm=T),min2=min(y,na.rm=T),max2=max(y,na.rm=T),
            mean1=mean(x),mean2=mean(y),median1=median(x),median2=median(y),pvalue=p)
@@ -260,47 +310,48 @@ computep=function(x,y)
   return(res)
 }
 
+computep_wilcox=function(x,y)
+{
+  # x=unique(x)
+  # y=unique(y)
+  # z=intersect(x,y)
+  # x=x[! x %in% z]
+  # y=y[! y %in% z]
+  print(paste0("meanx:",mean(x)))
+  print(paste0("meany:",mean(y)))
+  print(paste0("medianx:",median(x)))
+  print(paste0("mediany:",median(y)))
+  print(paste0("rangex:",range(x)))
+  print(paste0("rangey:",range(y)))
+  p=wilcox.test(x,y)$p.value
+  res=list(min1=min(x,na.rm=T),max1=max(x,na.rm=T),min2=min(y,na.rm=T),max2=max(y,na.rm=T),
+           mean1=mean(x),mean2=mean(y),median1=median(x),median2=median(y),pvalue=p)
+}
+
 library("beeswarm")
 library(GenomicRanges)
-
-
 #the overall table, col1:dataset,col2:samplename
-restable=data.frame(matrix(NA,nrow=length(grp1tumors)+length(grp2tumors),ncol=2))
+restable=data.frame(matrix(NA,nrow=length(grp1tumors)+length(grp2tumors)+length(grp3tumors),ncol=2))
 colnames(restable)=c("dataset","sample")
-restable[1:length(grp1tumors),1]="EA US"
-restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),1]="EA CHINA"
-restable[,2]=c(grp1tumors,grp2tumors)
-color=c("green","blue")
+restable[1:length(grp1tumors),1]="US-EA"
+restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),1]="CH-EA"
+restable[(length(grp1tumors)+length(grp2tumors)+1):nrow(restable),1]="CH-ESCC"
+restable[,2]=c(grp1tumors,grp2tumors,grp3tumors)
+restable=cbind.data.frame(restable,data.frame(col=c(rep("green",length(grp1tumors)),rep("blue",length(grp2tumors)),rep("skyblue",length(grp3tumors)))))
+restable$col=as.character(restable$col)
+restable$col[length(grp1tumors)+1]="firebrick1"
+restable$col[length(grp1tumors)+2]="firebrick2"
+restable$col[length(grp1tumors)+3]="firebrick3"
+restable$col[length(grp1tumors)+4]="firebrick4"
+#reorder group
+restable$dataset=factor(restable$dataset,c("US-EA","CH-EA","CH-ESCC"))
+color=c("green","blue","skyblue")
 
-#
-ploidy=c(1.91,2,34,2.97,1.94,2.46,1.95,2.55,2.78,2.29,1.77,2.6,2.26,2.61,2.13,1.75,2.81,2.04,1.89,2.11,2.61,1.98,1.96,1.95,2.09)
-contamination=c(0.32,0.25,0.06,0.29,0.26,0.12,0.16,0.21,0.22,0.18,0.07,0.09,0.2,0.19,0.25,0.22,0.32,0.25,0.35,0.13,0.15,0.21,0.3,0.14,0.17)
+#add ploidy
+ploidy=c(1.91,2,34,2.97,1.94,2.46,1.95,2.55,2.78,2.29,1.77,2.6,2.26,2.61,2.13,1.75,2.81,2.04,1.89,2.11,2.61,1.98,1.96,1.95,2.09,rep(NA,17))
+contamination=c(0.32,0.25,0.06,0.29,0.26,0.12,0.16,0.21,0.22,0.18,0.07,0.09,0.2,0.19,0.25,0.22,0.32,0.25,0.35,0.13,0.15,0.21,0.3,0.14,0.17,rep(NA,17))
 restable=cbind(restable,ploidy=ploidy)
-outfig="ploidy_dulakhenan.png"
-png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(ploidy ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Ploidy')
-beeswarm(ploidy ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
-dev.off()
-
 restable=cbind(restable,contamination=contamination)
-outfig="contamination_dulakhenan.png"
-png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(a2c ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Contamination')
-beeswarm(contamination ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
-dev.off()
-
 #count num of mutations
 #using .Somatic.annotated maf files
 countallmutations=function(nummutation,tumors)
@@ -315,26 +366,148 @@ countallmutations=function(nummutation,tumors)
   return(res)
 }
 
+plot3groups=function(item,datatable,main,ymax=NULL,adjustymin=F,colorgolden4=F,usewilcox=F)
+{
+  if (usewilcox==F)
+  {
+    res1=computep(datatable[1:length(grp1tumors),item],
+                  datatable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),item])
+    res2=computep(datatable[(length(grp1tumors)+length(grp2tumors)+1):nrow(restable),item],
+                  datatable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),item])
+  }else
+  {
+    res1=computep_wilcox(datatable[1:length(grp1tumors),item],
+                  datatable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),item])
+    res2=computep_wilcox(datatable[(length(grp1tumors)+length(grp2tumors)+1):nrow(restable),item],
+                  datatable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),item])
+  }
+  
+  pvalue1=format(res1$pvalue,digits=3)
+  pvalue2=format(res2$pvalue,digits=3)
+
+  idx=which(colnames(datatable)==item)
+  if (is.null(ymax))
+  {
+    ymax=max(datatable[,idx]) #mannualy set ymax
+    if (colorgolden4==T) #keep space for legend
+      ymax=1.2*ymax
+  }
+  ymin=min(datatable[,idx])
+  if (adjustymin==T)
+  {
+    ymin1=ymin-0.15*ymax
+    if (ymin1<0) ymin1=0
+  }else
+  {
+    ymin1=0
+  }
+  ymax1=max(datatable[datatable$sample %in% grp1tumors,idx])
+  ymax2=max(datatable[datatable$sample %in% grp2tumors,idx])
+  ymax3=max(datatable[datatable$sample %in% grp3tumors,idx])
+  
+  boxplot(as.formula(paste0(item," ~ dataset")), data=datatable, 
+          outline = FALSE,     ## avoid double-plotting outliers, if any
+          cex.axis=1.3,
+          cex.main=1.3,
+          ylim=c(ymin1,ymax*1.25),
+          main=main)
+  if (colorgolden4==T & "col" %in% colnames(datatable))
+  {
+    beeswarm(as.formula(paste0(item," ~ dataset")), data = datatable, 
+             pwcol = datatable$col, pch = 16,add = TRUE, cex=1.5)
+    legend("top",legend=c("US-EA","CH-EA","CH-EA-Golden4","CH-ESCC"),col=c("green","blue","firebrick","skyblue"),pch=16,horiz=T,text.width=0.7,x.intersp=0.1,xjust=0.5,yjust=0)
+  }else
+  {
+    beeswarm(as.formula(paste0(item," ~ dataset")), data = datatable, 
+             col = color, pch = 16,add = TRUE, cex=1.5)
+  }
+  ymax12=max(ymax1,ymax2)
+  segments(1,ymax12*1.05+ymax*0.05,2,ymax12*1.05+ymax*0.05,lwd=2)
+  segments(1,ymax12*1.05+ymax*0.05,1,ymax12*1.05,lwd=2)
+  segments(2,ymax12*1.05+ymax*0.05,2,ymax12*1.05,lwd=2)
+  text(1.5,ymax12*1.05+ymax*0.13,paste0("p=",pvalue1),cex=1.3)
+  ymax23=max(ymax2,ymax3)
+  segments(2,ymax23*1.05+ymax*0.05,3,ymax23*1.05+ymax*0.05,lwd=2)
+  segments(2,ymax23*1.05+ymax*0.05,2,ymax23*1.05,lwd=2)
+  segments(3,ymax23*1.05+ymax*0.05,3,ymax23*1.05,lwd=2)
+  text(2.5,ymax23*1.05+ymax*0.13,paste0("p=",pvalue2),cex=1.3)
+}
+
+
+plot2groups=function(item,datatable,main,ymax=NULL,adjustymin=F,colorgolden4=F,usewilcox=F)
+{
+  if (usewilcox==F)
+  {
+    res1=computep(datatable[1:length(grp1tumors),item],
+                  datatable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),item])
+  }else
+  {
+    res1=computep_wilcox(datatable[1:length(grp1tumors),item],
+                         datatable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),item])
+  }
+
+  pvalue1=format(res1$pvalue,digits=3)
+  idx=which(colnames(datatable)==item)
+  if (is.null(ymax))
+  {
+    ymax=max(datatable[,idx]) #mannualy set ymax
+    if (colorgolden4==T) #keep space for legend
+      ymax=1.2*ymax
+  }
+  ymin=min(datatable[,idx])
+  if (adjustymin==T)
+  {
+    ymin1=ymin-0.15*ymax
+    if (ymin1<0) ymin1=0
+  }else
+  {
+    ymin1=0
+  }
+  ymax1=max(datatable[datatable$sample %in% grp1tumors,idx])
+  ymax2=max(datatable[datatable$sample %in% grp2tumors,idx])
+
+  boxplot(as.formula(paste0(item," ~ dataset")), data=datatable, 
+          outline = FALSE,     ## avoid double-plotting outliers, if any
+          cex.axis=1.3,
+          cex.main=1.3,
+          ylim=c(ymin1,ymax*1.25),
+          main=main)
+  if (colorgolden4==T & "col" %in% colnames(datatable))
+  {
+    beeswarm(as.formula(paste0(item," ~ dataset")), data = datatable, 
+             pwcol = datatable$col, pch = 16,add = TRUE, cex=1.5)
+    legend("topright",legend=c("US-EA","CH-EA","CH-EA-Golden4"),col=c("green","blue","firebrick"),pch=16,horiz=T,text.width=0.7,x.intersp=0.1,xjust=0.5,yjust=0)
+  }else
+  {
+    beeswarm(as.formula(paste0(item," ~ dataset")), data = datatable, 
+             col = color, pch = 16,add = TRUE, cex=1.5)
+  }
+  ymax12=max(ymax1,ymax2)
+  segments(1,ymax12*1.05+ymax*0.05,2,ymax12*1.05+ymax*0.05,lwd=2)
+  segments(1,ymax12*1.05+ymax*0.05,1,ymax12*1.05,lwd=2)
+  segments(2,ymax12*1.05+ymax*0.05,2,ymax12*1.05,lwd=2)
+  text(1.5,ymax12*1.05+ymax*0.13,paste0("p=",pvalue1),cex=1.3)
+}
+
+
 grp1mutations=countallmutations(dulak_res$nummutation,grp1tumors)
+grp1mutations[,2]=grp1mutations[,2]/(3*10^9)*10^6
 grp2mutations=countallmutations(henan_res$nummutation,grp2tumors)
+grp2mutations[,2]=grp2mutations[,2]/(3*10^9)*10^6
+grp3mutations=countallmutations(escc_res$nummutation,grp3tumors)
+grp3mutations[,2]=grp3mutations[,2]/(3*10^9)*10^6
 
-
-restable=cbind(restable,c(grp1mutations[,2],grp2mutations[,2]))
+restable=cbind(restable,c(grp1mutations[,2],grp2mutations[,2],grp3mutations[,2]))
 colnames(restable)[ncol(restable)]="mutation"
 
-res_mutation=computep(restable[1:length(grp1tumors),"mutation"],
+res_mutation1=computep(restable[1:length(grp1tumors),"mutation"],
                       restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"mutation"])
+res_mutation2=computep(restable[(length(grp1tumors)+length(grp2tumors)+1):nrow(restable),"mutation"],
+                       restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"mutation"])
 
-outfig="number_mutations_dulakhenan.png"
+outfig="number_mutations.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(mutation ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        ylim=c(0,62000),
-        main = 'Number of mutations')
-beeswarm(mutation ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot3groups(item="mutation",datatable=restable,main='Mutation frequency (perMB)')
 dev.off()
 
 
@@ -353,78 +526,355 @@ counttransrate=function(transratemat,tumors,opt="a2c")
 
 grp1a2c=counttransrate(dulak_res$transratemat,grp1tumors)
 grp2a2c=counttransrate(henan_res$transratemat,grp2tumors)
+grp3a2c=counttransrate(escc_res$transratemat,grp3tumors)
 #add mutations
-restable=cbind(restable,c(grp1a2c[,2],grp2a2c[,2]))
+restable=cbind(restable,c(grp1a2c[,2],grp2a2c[,2],grp3a2c[,2]))
 colnames(restable)[ncol(restable)]="a2c"
-res_a2c=computep(restable[1:length(grp1tumors),"a2c"],
-                 restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"a2c"])
-outfig="a2c_dulakhenan.png"
+
+outfig="a2c.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(a2c ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of A>C mutations')
-beeswarm(a2c ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot3groups(item="a2c",datatable=restable,main='Proportion of A>C mutations',adjustymin=T)
 dev.off()
 
 grp1aa2ac=counttransrate(dulak_res$transratemat,grp1tumors,opt="aa2c")
 grp2aa2ac=counttransrate(henan_res$transratemat,grp2tumors,opt="aa2c")
+grp3aa2ac=counttransrate(escc_res$transratemat,grp3tumors,opt="aa2c")
 #add mutations
-restable=cbind(restable,c(grp1aa2ac[,2],grp2aa2ac[,2]))
+restable=cbind(restable,c(grp1aa2ac[,2],grp2aa2ac[,2],grp3aa2ac[,2]))
 colnames(restable)[ncol(restable)]="aa2ac"
-res_aa2ac=computep(restable[1:length(grp1tumors),"aa2ac"],
-                   restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"aa2ac"])
-outfig="aa2ac_dulakhenan.png"
+
+outfig="aa2ac.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(aa2ac ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Percentage of A>C at AA sites (%)')
-beeswarm(aa2ac ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot3groups(item="aa2ac",datatable=restable,main='Proportion of A>C at AA sites',adjustymin=T)
 dev.off()
 
 grp1a2g=counttransrate(dulak_res$transratemat,grp1tumors,opt="a2g")
 grp2a2g=counttransrate(henan_res$transratemat,grp2tumors,opt="a2g")
+grp3a2g=counttransrate(escc_res$transratemat,grp3tumors,opt="a2g")
 #add mutations
-restable=cbind(restable,c(grp1a2g[,2],grp2a2g[,2]))
+restable=cbind(restable,c(grp1a2g[,2],grp2a2g[,2],grp3a2g[,2]))
 colnames(restable)[ncol(restable)]="a2g"
-res_a2g=computep(restable[1:length(grp1tumors),"a2g"],
-                 restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"a2g"])
-outfig="a2g_dulakhenan.png"
+
+outfig="a2g.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(a2g ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of A>G mutations')
-beeswarm(a2g ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot3groups(item="a2g",datatable=restable,main='Proportion of A>G mutations',adjustymin=T)
 dev.off()
 
 grp1a2t=counttransrate(dulak_res$transratemat,grp1tumors,opt="a2t")
 grp2a2t=counttransrate(henan_res$transratemat,grp2tumors,opt="a2t")
+grp3a2t=counttransrate(escc_res$transratemat,grp3tumors,opt="a2t")
+#add mutations
+restable=cbind(restable,c(grp1a2t[,2],grp2a2t[,2],grp3a2t[,2]))
+colnames(restable)[ncol(restable)]="a2t"
+
+outfig="a2t.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="a2t",datatable=restable,main='Proportion of A>T mutations',adjustymin=T)
+dev.off()
+
+grp1c2a=counttransrate(dulak_res$transratemat,grp1tumors,opt="c2a")
+grp2c2a=counttransrate(henan_res$transratemat,grp2tumors,opt="c2a")
+grp3c2a=counttransrate(escc_res$transratemat,grp3tumors,opt="c2a")
+#add mutations
+restable=cbind(restable,c(grp1c2a[,2],grp2c2a[,2],grp3c2a[,2]))
+colnames(restable)[ncol(restable)]="c2a"
+
+outfig="c2a.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="c2a",datatable=restable,main='Proportion of C>A mutations',adjustymin=T)
+dev.off()
+
+grp1c2g=counttransrate(dulak_res$transratemat,grp1tumors,opt="c2g")
+grp2c2g=counttransrate(henan_res$transratemat,grp2tumors,opt="c2g")
+grp3c2g=counttransrate(escc_res$transratemat,grp3tumors,opt="c2g")
+#add mutations
+restable=cbind(restable,c(grp1c2g[,2],grp2c2g[,2],grp3c2g[,2]))
+colnames(restable)[ncol(restable)]="c2g"
+
+outfig="c2g.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="c2g",datatable=restable,main='Proportion of C>G mutations',adjustymin=T)
+dev.off()
+
+grp1c2t=counttransrate(dulak_res$transratemat,grp1tumors,opt="c2t")
+grp2c2t=counttransrate(henan_res$transratemat,grp2tumors,opt="c2t")
+grp3c2t=counttransrate(escc_res$transratemat,grp3tumors,opt="c2t")
+#add mutations
+restable=cbind(restable,c(grp1c2t[,2],grp2c2t[,2],grp3c2t[,2]))
+colnames(restable)[ncol(restable)]="c2t"
+# res_c2t1=computep(restable[1:length(grp1tumors),"c2t"],
+#                  restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2t"])
+# res_c2t2=computep(restable[(length(grp1tumors)+length(grp2tumors)+1):nrow(restable),"c2t"],
+#                  restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2t"])
+outfig="c2t.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="c2t",datatable=restable,main='Proportion of C>T mutations',adjustymin=T)
+dev.off()
+
+
+#cnv length count
+countcnvlength=function(cnvlenfile,tumors)
+{
+  res=data.frame(matrix(NA,ncol=4,nrow=length(tumors)))
+  colnames(res)=c("tumor","lengain","lenloss","lenloh")
+  res[,1]=tumors
+  tmp=read.table(cnvlenfile,header=T)
+  res[,2]=rowSums(tmp[,2:25])/10^6
+  res[,3]=rowSums(tmp[,26:49])/10^6
+  res[,4]=rowSums(tmp[,50:73])/10^6
+  return(res)
+}
+
+cnvlenfile1="/fh/scratch/delete30/dai_j/freec/dulakcnvlengthcount.txt"
+grp1cnvlen=countcnvlength(cnvlenfile1,grp1tumors)
+cnvlenfile2="/fh/scratch/delete30/dai_j/henan/freec/henancnvlengthcount.txt"
+grp2cnvlen=countcnvlength(cnvlenfile2,grp2tumors)
+cnvlenfile3="/fh/scratch/delete30/dai_j/escc/freec/escccnvlengthcount.txt"
+grp3cnvlen=countcnvlength(cnvlenfile3,grp3tumors)
+restable=cbind(restable,c(grp1cnvlen[,2],grp2cnvlen[,2],grp3cnvlen[,2]))
+colnames(restable)[ncol(restable)]="lengain"
+
+outfig="lengain.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="lengain",datatable=restable,main='Length of amplifications (Mb)')
+dev.off()
+
+restable=cbind(restable,c(grp1cnvlen[,3],grp2cnvlen[,3],grp3cnvlen[,3]))
+colnames(restable)[ncol(restable)]="lenloss"
+
+outfig="lenloss.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="lenloss",datatable=restable,main='Length of deletions (Mb)')
+dev.off()
+
+restable=cbind(restable,c(grp1cnvlen[,4],grp2cnvlen[,4],grp3cnvlen[,4]))
+colnames(restable)[ncol(restable)]="lenloh"
+
+outfig="lenloh.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="lenloh",datatable=restable,main='Length of LOH (Mb)')
+dev.off()
+
+restable=cbind(restable,c(rowSums(grp1cnvlen[,2:4]),rowSums(grp2cnvlen[,2:4]),rowSums(grp3cnvlen[,2:4])))
+colnames(restable)[ncol(restable)]="lencnv"
+
+outfig="lencnv.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="lencnv",datatable=restable,main='Length of copy number alterations (Mb)')
+dev.off()
+
+
+cnvnumfile1="/fh/scratch/delete30/dai_j/freec/dulakcnvnumcount.txt"
+grp1cnvnum=countcnvlength(cnvnumfile1,grp1tumors)
+cnvnumfile2="/fh/scratch/delete30/dai_j/henan/freec/henancnvnumcount.txt"
+grp2cnvnum=countcnvlength(cnvnumfile2,grp2tumors)
+cnvnumfile3="/fh/scratch/delete30/dai_j/escc/freec/escccnvnumcount.txt"
+grp3cnvnum=countcnvlength(cnvnumfile3,grp3tumors)
+
+restable=cbind(restable,c(grp1cnvnum[,2]*10^6,grp2cnvnum[,2]*10^6,grp3cnvnum[,2]*10^6))
+colnames(restable)[ncol(restable)]="numgain"
+
+outfig="numgain.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="numgain",datatable=restable,main='Number of amplifications')
+dev.off()
+
+restable=cbind(restable,c(grp1cnvnum[,3]*10^6,grp2cnvnum[,3]*10^6,grp3cnvnum[,3]*10^6))
+colnames(restable)[ncol(restable)]="numloss"
+
+outfig="numloss.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="numloss",datatable=restable,main='Number of deletions')
+dev.off()
+
+restable=cbind(restable,c(grp1cnvnum[,4]*10^6,grp2cnvnum[,4]*10^6,grp3cnvnum[,4]*10^6))
+colnames(restable)[ncol(restable)]="numloh"
+
+outfig="numloh.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="numloh",datatable=restable,main='Number of LOH')
+dev.off()
+
+restable=cbind(restable,c(rowSums(grp1cnvnum[,2:4])*10^6,rowSums(grp2cnvnum[,2:4])*10^6,rowSums(grp3cnvnum[,2:4])*10^6))
+colnames(restable)[ncol(restable)]="numcnv"
+
+outfig="numcnv.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="numcnv",datatable=restable,main='Number of copy number alterations')
+dev.off()
+
+#use cutoff
+cnvlenfile1="/fh/scratch/delete30/dai_j/freec/dulakcnvlengthcount_stringent.txt"
+grp1cnvlen=countcnvlength(cnvlenfile1,grp1tumors)
+cnvlenfile2="/fh/scratch/delete30/dai_j/henan/freec/henancnvlengthcount_stringent.txt"
+grp2cnvlen=countcnvlength(cnvlenfile2,grp2tumors)
+cnvlenfile3="/fh/scratch/delete30/dai_j/escc/freec/escccnvlengthcount_stringent.txt"
+grp3cnvlen=countcnvlength(cnvlenfile3,grp3tumors)
+restable=cbind(restable,c(grp1cnvlen[,2],grp2cnvlen[,2],grp3cnvlen[,2]))
+colnames(restable)[ncol(restable)]="lengain"
+
+outfig="lengain_stringent.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="lengain",datatable=restable,main='Length of amplifications (Mb)',colorgolden4=T,usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(grp1cnvlen[,3],grp2cnvlen[,3],grp3cnvlen[,3]))
+colnames(restable)[ncol(restable)]="lenloss"
+
+outfig="lenloss_stringent.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="lenloss",datatable=restable,main='Length of deletions (Mb)',colorgolden4=T,usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(grp1cnvlen[,4],grp2cnvlen[,4],grp3cnvlen[,4]))
+colnames(restable)[ncol(restable)]="lenloh"
+
+outfig="lenloh_stringent.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="lenloh",datatable=restable,main='Length of LOH (Mb)',colorgolden4=T,usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(rowSums(grp1cnvlen[,2:4]),rowSums(grp2cnvlen[,2:4]),rowSums(grp3cnvlen[,2:4])))
+colnames(restable)[ncol(restable)]="lencnv"
+
+outfig="lencnv_stringent.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="lencnv",datatable=restable,main='Length of copy number alterations (Mb)',colorgolden4=T,usewilcox=T)
+dev.off()
+
+
+cnvnumfile1="/fh/scratch/delete30/dai_j/freec/dulakcnvnumcount_stringent.txt"
+grp1cnvnum=countcnvlength(cnvnumfile1,grp1tumors)
+cnvnumfile2="/fh/scratch/delete30/dai_j/henan/freec/henancnvnumcount_stringent.txt"
+grp2cnvnum=countcnvlength(cnvnumfile2,grp2tumors)
+cnvnumfile3="/fh/scratch/delete30/dai_j/escc/freec/escccnvnumcount_stringent.txt"
+grp3cnvnum=countcnvlength(cnvnumfile3,grp3tumors)
+
+restable=cbind(restable,c(grp1cnvnum[,2]*10^6,grp2cnvnum[,2]*10^6,grp3cnvnum[,2]*10^6))
+colnames(restable)[ncol(restable)]="numgain"
+
+outfig="numgain_stringent.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="numgain",datatable=restable,main='Number of amplifications',colorgolden4=T,usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(grp1cnvnum[,3]*10^6,grp2cnvnum[,3]*10^6,grp3cnvnum[,3]*10^6))
+colnames(restable)[ncol(restable)]="numloss"
+
+outfig="numloss_stringent.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="numloss",datatable=restable,main='Number of deletions',colorgolden4=F,usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(grp1cnvnum[,4]*10^6,grp2cnvnum[,4]*10^6,grp3cnvnum[,4]*10^6))
+colnames(restable)[ncol(restable)]="numloh"
+
+outfig="numloh_stringent.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="numloh",datatable=restable,main='Number of LOH',colorgolden4=T,usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(rowSums(grp1cnvnum[,2:4])*10^6,rowSums(grp2cnvnum[,2:4])*10^6,rowSums(grp3cnvnum[,2:4])*10^6))
+colnames(restable)[ncol(restable)]="numcnv"
+
+outfig="numcnv_stringent.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot3groups(item="numcnv",datatable=restable,main='Number of copy number alterations',colorgolden4=T,usewilcox=T)
+dev.off()
+
+##--Only for EA-----------------------------------------------------------------
+restable=data.frame(matrix(NA,nrow=length(grp1tumors)+length(grp2tumors),ncol=2))
+colnames(restable)=c("dataset","sample")
+restable[1:length(grp1tumors),1]="US-EA"
+restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),1]="CH-EA"
+restable[,2]=c(grp1tumors,grp2tumors)
+#reorder group
+restable$dataset=factor(restable$dataset,c("US-EA","CH-EA"))
+color=c("green","blue","skyblue")
+
+#add ploidy
+ploidy=c(1.91,2.34,2.97,1.94,2.46,1.95,2.55,2.78,2.29,1.77,2.6,2.26,2.61,2.13,1.75,2.81,2.04,1.88,2.52,1.98,2.61,1.88,1.96,1.95,2.07)
+contamination=c(0.32,0.25,0.06,0.29,0.26,0.12,0.16,0.21,0.22,0.18,0.07,0.09,0.2,0.19,0.25,0.22,0.32,0.18,0.3,0.13,0.15,0.21,0.3,0.14,0.32)
+restable=cbind(restable,ploidy=ploidy)
+restable=cbind(restable,contamination=contamination)
+outfig="EA_ploidy.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="ploidy",datatable=restable,adjustymin=T,main='Ploidy')
+dev.off()
+
+outfig="EA_contamination.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="contamination",datatable=restable,adjustymin=T,main='Contamination')
+dev.off()
+
+grp1mutations=countallmutations(dulak_res$nummutation,grp1tumors)
+grp1mutations[,2]=grp1mutations[,2]/(3*10^9)*10^6
+grp2mutations=countallmutations(henan_res$nummutation,grp2tumors)
+grp2mutations[,2]=grp2mutations[,2]/(3*10^9)*10^6
+
+restable=cbind(restable,c(grp1mutations[,2],grp2mutations[,2]))
+colnames(restable)[ncol(restable)]="mutation"
+
+outfig="EA_number_mutations.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="mutation",datatable=restable,main='Mutation frequency (perMB)')
+dev.off()
+
+
+grp1a2c=counttransrate(dulak_res$transratemat,grp1tumors)
+grp2a2c=counttransrate(henan_res$transratemat,grp2tumors)
+#add mutations
+restable=cbind(restable,c(grp1a2c[,2],grp2a2c[,2]))
+colnames(restable)[ncol(restable)]="a2c"
+
+outfig="EA_a2c.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="a2c",datatable=restable,main='Proportion of A>C mutations',ymax=0.5,adjustymin=T,usewilcox=T)
+dev.off()
+
+grp1aa2ac=counttransrate(dulak_res$transratemat,grp1tumors,opt="aa2c")
+grp2aa2ac=counttransrate(henan_res$transratemat,grp2tumors,opt="aa2c")
+
+#add mutations
+restable=cbind(restable,c(grp1aa2ac[,2],grp2aa2ac[,2]))
+colnames(restable)[ncol(restable)]="aa2ac"
+
+outfig="EA_aa2ac.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="aa2ac",datatable=restable,main='Proportion of A>C at AA sites',adjustymin=T)
+dev.off()
+
+#aa2ac/a2c
+grp1aa2acprop=dulak_res$transratemat["aa2c",]/dulak_res$transratemat["a2c",]
+range(grp1aa2acprop)
+median(as.numeric(grp1aa2acprop[1,]))
+grp2aa2acprop=henan_res$transratemat["aa2c",]/henan_res$transratemat["a2c",]
+range(grp2aa2acprop)
+median(as.numeric(grp2aa2acprop[1,]))
+mean(as.numeric(henan_res$transratemat["aa2c",]))
+
+grp1a2g=counttransrate(dulak_res$transratemat,grp1tumors,opt="a2g")
+grp2a2g=counttransrate(henan_res$transratemat,grp2tumors,opt="a2g")
+
+#add mutations
+restable=cbind(restable,c(grp1a2g[,2],grp2a2g[,2]))
+colnames(restable)[ncol(restable)]="a2g"
+
+outfig="EA_a2g.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="a2g",datatable=restable,main='Proportion of A>G mutations',adjustymin=T)
+dev.off()
+
+grp1a2t=counttransrate(dulak_res$transratemat,grp1tumors,opt="a2t")
+grp2a2t=counttransrate(henan_res$transratemat,grp2tumors,opt="a2t")
+
 #add mutations
 restable=cbind(restable,c(grp1a2t[,2],grp2a2t[,2]))
 colnames(restable)[ncol(restable)]="a2t"
-res_a2t=computep(restable[1:length(grp1tumors),"a2t"],
-                 restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"a2t"])
-outfig="a2t_dulakhenan.png"
+
+outfig="EA_a2t.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(a2t ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of A>T mutations')
-beeswarm(a2t ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="a2t",datatable=restable,main='Proportion of A>T mutations',adjustymin=T)
 dev.off()
 
 grp1c2a=counttransrate(dulak_res$transratemat,grp1tumors,opt="c2a")
@@ -432,18 +882,10 @@ grp2c2a=counttransrate(henan_res$transratemat,grp2tumors,opt="c2a")
 #add mutations
 restable=cbind(restable,c(grp1c2a[,2],grp2c2a[,2]))
 colnames(restable)[ncol(restable)]="c2a"
-res_c2a=computep(restable[1:length(grp1tumors),"c2a"],
-                 restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2a"])
-outfig="c2a_dulakhenan.png"
+
+outfig="EA_c2a.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(c2a ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of C>A mutations')
-beeswarm(c2a ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="c2a",datatable=restable,main='Proportion of C>A mutations',adjustymin=T)
 dev.off()
 
 grp1c2g=counttransrate(dulak_res$transratemat,grp1tumors,opt="c2g")
@@ -451,217 +893,181 @@ grp2c2g=counttransrate(henan_res$transratemat,grp2tumors,opt="c2g")
 #add mutations
 restable=cbind(restable,c(grp1c2g[,2],grp2c2g[,2]))
 colnames(restable)[ncol(restable)]="c2g"
-res_c2g=computep(restable[1:length(grp1tumors),"c2g"],
-                 restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2g"])
-outfig="c2g_dulakhenan.png"
+
+outfig="EA_c2g.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(c2g ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of C>G mutations')
-beeswarm(c2g ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="c2g",datatable=restable,main='Proportion of C>G mutations',adjustymin=T)
 dev.off()
 
 grp1c2t=counttransrate(dulak_res$transratemat,grp1tumors,opt="c2t")
 grp2c2t=counttransrate(henan_res$transratemat,grp2tumors,opt="c2t")
+
 #add mutations
 restable=cbind(restable,c(grp1c2t[,2],grp2c2t[,2]))
 colnames(restable)[ncol(restable)]="c2t"
-res_c2t=computep(restable[1:length(grp1tumors),"c2t"],
-                 restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2t"])
-outfig="c2t_dulakhenan.png"
+# res_c2t1=computep(restable[1:length(grp1tumors),"c2t"],
+#                  restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2t"])
+# res_c2t2=computep(restable[(length(grp1tumors)+length(grp2tumors)+1):nrow(restable),"c2t"],
+#                  restable[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2t"])
+outfig="EA_c2t.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(c2t ~ dataset, data = restable, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of C>T mutations')
-beeswarm(c2t ~ dataset, data = restable, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="c2t",datatable=restable,main='Proportion of C>T mutations',adjustymin=T,usewilcox=T)
 dev.off()
 
-#SNV mutations---------------------------------------------
-restable1=data.frame(matrix(NA,nrow=length(grp1tumors)+length(grp2tumors),ncol=2))
-colnames(restable1)=c("dataset","sample")
-restable1[1:length(grp1tumors),1]="EA US"
-restable1[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),1]="EA CHINA"
-restable1[,2]=c(grp1tumors,grp2tumors)
+cnvlenfile1="/fh/scratch/delete30/dai_j/freec/dulakcnvlengthcount.txt"
+grp1cnvlen=countcnvlength(cnvlenfile1,grp1tumors)
+cnvlenfile2="/fh/scratch/delete30/dai_j/henan/freec/henancnvlengthcount.txt"
+grp2cnvlen=countcnvlength(cnvlenfile2,grp2tumors)
 
-grp1mutations_snv=countallmutations(dulak_res$nummutation_snv,grp1tumors)
-grp2mutations_snv=countallmutations(henan_res$nummutation_snv,grp2tumors)
-
-restable1=cbind(restable1,c(grp1mutations_snv[,2],grp2mutations_snv[,2]))
-colnames(restable1)[ncol(restable1)]="mutation"
-
-res_mutation_snv=computep(restable1[1:length(grp1tumors),"mutation"],
-                      restable1[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"mutation"])
-
-outfig="number_mutations_dulakhenan_snv.png"
+restable=cbind(restable,c(grp1cnvlen[,2],grp2cnvlen[,2]))
+colnames(restable)[ncol(restable)]="lengain"
+outfig="EA_lengain.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(mutation ~ dataset, data = restable1, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        ylim=c(0,300),
-        main = 'Number of mutations')
-beeswarm(mutation ~ dataset, data = restable1, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="lengain",datatable=restable,main='Length of amplifications (Mb)')
 dev.off()
 
-grp1a2c_snv=counttransrate(dulak_res$transrate_snv_mat,grp1tumors)
-grp2a2c_snv=counttransrate(henan_res$transrate_snv_mat,grp2tumors)
-#add mutations
-restable1=cbind(restable1,c(grp1a2c_snv[,2],grp2a2c_snv[,2]))
-colnames(restable1)[ncol(restable1)]="a2c"
-res_a2c_snv=computep(restable1[1:length(grp1tumors),"a2c"],
-                 restable1[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"a2c"])
-outfig="a2c_dulakhenan_snv.png"
+restable=cbind(restable,c(grp1cnvlen[,3],grp2cnvlen[,3]))
+colnames(restable)[ncol(restable)]="lenloss"
+
+outfig="EA_lenloss.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(a2c ~ dataset, data = restable1, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of A>C mutations')
-beeswarm(a2c ~ dataset, data = restable1, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="lenloss",datatable=restable,main='Length of deletions (Mb)')
 dev.off()
 
-grp1aa2ac_snv=counttransrate(dulak_res$transrate_snv_mat,grp1tumors,opt="aa2c")
-grp2aa2ac_snv=counttransrate(henan_res$transrate_snv_mat,grp2tumors,opt="aa2c")
-#add mutations
-restable1=cbind(restable1,c(grp1aa2ac_snv[,2],grp2aa2ac_snv[,2]))
-colnames(restable1)[ncol(restable1)]="aa2ac"
-res_aa2ac_snv=computep(restable1[1:length(grp1tumors),"aa2ac"],
-                   restable1[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"aa2ac"])
-outfig="aa2ac_dulakhenan_snv.png"
+restable=cbind(restable,c(grp1cnvlen[,4],grp2cnvlen[,4]))
+colnames(restable)[ncol(restable)]="lenloh"
+
+outfig="EA_lenloh.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(aa2ac ~ dataset, data = restable1, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Percentage of A>C at AA sites (%)')
-beeswarm(aa2ac ~ dataset, data = restable1, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="lenloh",datatable=restable,main='Length of LOH (Mb)')
 dev.off()
 
-grp1a2g_snv=counttransrate(dulak_res$transrate_snv_mat,grp1tumors,opt="a2g")
-grp2a2g_snv=counttransrate(henan_res$transrate_snv_mat,grp2tumors,opt="a2g")
-#add mutations
-restable1=cbind(restable1,c(grp1a2g_snv[,2],grp2a2g_snv[,2]))
-colnames(restable1)[ncol(restable1)]="a2g"
-res_a2g_snv=computep(restable1[1:length(grp1tumors),"a2g"],
-                 restable1[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"a2g"])
-outfig="a2g_dulakhenan_snv.png"
+restable=cbind(restable,c(rowSums(grp1cnvlen[,2:4]),rowSums(grp2cnvlen[,2:4])))
+colnames(restable)[ncol(restable)]="lencnv"
+
+outfig="EA_lencnv.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(a2g ~ dataset, data = restable1, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of A>G mutations')
-beeswarm(a2g ~ dataset, data = restable1, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="lencnv",datatable=restable,main='Length of copy number alterations (Mb)')
 dev.off()
 
-grp1a2t_snv=counttransrate(dulak_res$transrate_snv_mat,grp1tumors,opt="a2t")
-grp2a2t_snv=counttransrate(henan_res$transrate_snv_mat,grp2tumors,opt="a2t")
-#add mutations
-restable1=cbind(restable1,c(grp1a2t_snv[,2],grp2a2t_snv[,2]))
-colnames(restable1)[ncol(restable1)]="a2t"
-res_a2t_snv=computep(restable1[1:length(grp1tumors),"a2t"],
-                 restable1[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"a2t"])
-outfig="a2t_dulakhenan_snv.png"
+
+cnvnumfile1="/fh/scratch/delete30/dai_j/freec/dulakcnvnumcount.txt"
+grp1cnvnum=countcnvlength(cnvnumfile1,grp1tumors)
+cnvnumfile2="/fh/scratch/delete30/dai_j/henan/freec/henancnvnumcount.txt"
+grp2cnvnum=countcnvlength(cnvnumfile2,grp2tumors)
+
+
+restable=cbind(restable,c(grp1cnvnum[,2]*10^6,grp2cnvnum[,2]*10^6))
+colnames(restable)[ncol(restable)]="numgain"
+
+outfig="EA_numgain.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(a2t ~ dataset, data = restable1, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of A>T mutations')
-beeswarm(a2t ~ dataset, data = restable1, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="numgain",datatable=restable,main='Number of amplifications')
 dev.off()
 
-grp1c2a_snv=counttransrate(dulak_res$transrate_snv_mat,grp1tumors,opt="c2a")
-grp2c2a_snv=counttransrate(henan_res$transrate_snv_mat,grp2tumors,opt="c2a")
-#add mutations
-restable1=cbind(restable1,c(grp1c2a_snv[,2],grp2c2a_snv[,2]))
-colnames(restable1)[ncol(restable1)]="c2a"
-res_c2a_snv=computep(restable1[1:length(grp1tumors),"c2a"],
-                 restable1[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2a"])
-outfig="c2a_dulakhenan_snv.png"
+restable=cbind(restable,c(grp1cnvnum[,3]*10^6,grp2cnvnum[,3]*10^6))
+colnames(restable)[ncol(restable)]="numloss"
+
+outfig="EA_numloss.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(c2a ~ dataset, data = restable1, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of C>A mutations')
-beeswarm(c2a ~ dataset, data = restable1, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="numloss",datatable=restable,main='Number of deletions')
 dev.off()
 
-grp1c2g_snv=counttransrate(dulak_res$transrate_snv_mat,grp1tumors,opt="c2g")
-grp2c2g_snv=counttransrate(henan_res$transrate_snv_mat,grp2tumors,opt="c2g")
-#add mutations
-restable1=cbind(restable1,c(grp1c2g_snv[,2],grp2c2g_snv[,2]))
-colnames(restable1)[ncol(restable1)]="c2g"
-res_c2g_snv=computep(restable1[1:length(grp1tumors),"c2g"],
-                 restable1[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2g"])
-outfig="c2g_dulakhenan_snv.png"
+restable=cbind(restable,c(grp1cnvnum[,4]*10^6,grp2cnvnum[,4]*10^6))
+colnames(restable)[ncol(restable)]="numloh"
+
+outfig="EA_numloh.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(c2g ~ dataset, data = restable1, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of C>G mutations')
-beeswarm(c2g ~ dataset, data = restable1, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="numloh",datatable=restable,main='Number of LOH')
 dev.off()
 
-grp1c2t_snv=counttransrate(dulak_res$transrate_snv_mat,grp1tumors,opt="c2t")
-grp2c2t_snv=counttransrate(henan_res$transrate_snv_mat,grp2tumors,opt="c2t")
-#add mutations
-restable1=cbind(restable1,c(grp1c2t_snv[,2],grp2c2t_snv[,2]))
-colnames(restable1)[ncol(restable1)]="c2t"
-res_c2t_snv=computep(restable1[1:length(grp1tumors),"c2t"],
-                 restable1[(length(grp1tumors)+1):(length(grp1tumors)+length(grp2tumors)),"c2t"])
-outfig="c2t_dulakhenan_snv.png"
+restable=cbind(restable,c(rowSums(grp1cnvnum[,2:4])*10^6,rowSums(grp2cnvnum[,2:4])*10^6))
+colnames(restable)[ncol(restable)]="numcnv"
+
+outfig="EA_numcnv.png"
 png(outfig, width = 6, height = 4, units = 'in', res=300)
-boxplot(c2t ~ dataset, data = restable1, 
-        outline = FALSE,     ## avoid double-plotting outliers, if any
-        cex.axis=2,
-        cex.main=2,
-        #ylim=c(2000,52000),
-        main = 'Proportion of C>T mutations')
-beeswarm(c2t ~ dataset, data = restable1, 
-         col = color, pch = 16,add = TRUE, cex=2)
+plot2groups(item="numcnv",datatable=restable,main='Number of copy number alterations')
+dev.off()
+
+#use cutoff from normal data
+cnvlenfile1="/fh/scratch/delete30/dai_j/freec/dulakcnvlengthcount_stringent.txt"
+grp1cnvlen=countcnvlength(cnvlenfile1,grp1tumors)
+cnvlenfile2="/fh/scratch/delete30/dai_j/henan/freec/henancnvlengthcount_stringent.txt"
+grp2cnvlen=countcnvlength(cnvlenfile2,grp2tumors)
+
+restable=cbind(restable,c(grp1cnvlen[,2],grp2cnvlen[,2]))
+colnames(restable)[ncol(restable)]="lengain"
+outfig="EA_lengain_stringent_wilcox.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="lengain",datatable=restable,main='Length of amplifications (Mb)',usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(grp1cnvlen[,3],grp2cnvlen[,3]))
+colnames(restable)[ncol(restable)]="lenloss"
+
+outfig="EA_lenloss_stringent_wilcox.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="lenloss",datatable=restable,main='Length of deletions (Mb)',usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(grp1cnvlen[,4],grp2cnvlen[,4]))
+colnames(restable)[ncol(restable)]="lenloh"
+
+outfig="EA_lenloh_stringent_wilcox.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="lenloh",datatable=restable,main='Length of LOH (Mb)',usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(rowSums(grp1cnvlen[,2:4]),rowSums(grp2cnvlen[,2:4])))
+colnames(restable)[ncol(restable)]="lencnv"
+
+outfig="EA_lencnv_stringent_wilcox.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="lencnv",datatable=restable,main='Length of copy number alterations (Mb)',usewilcox=T)
+dev.off()
+
+
+cnvnumfile1="/fh/scratch/delete30/dai_j/freec/dulakcnvnumcount_stringent.txt"
+grp1cnvnum=countcnvlength(cnvnumfile1,grp1tumors)
+cnvnumfile2="/fh/scratch/delete30/dai_j/henan/freec/henancnvnumcount_stringent.txt"
+grp2cnvnum=countcnvlength(cnvnumfile2,grp2tumors)
+
+
+restable=cbind(restable,c(grp1cnvnum[,2]*10^6,grp2cnvnum[,2]*10^6))
+colnames(restable)[ncol(restable)]="numgain"
+
+outfig="EA_numgain_stringent_wilcox.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="numgain",datatable=restable,main='Number of amplifications',usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(grp1cnvnum[,3]*10^6,grp2cnvnum[,3]*10^6))
+colnames(restable)[ncol(restable)]="numloss"
+
+outfig="EA_numloss_stringent_wilcox.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="numloss",datatable=restable,main='Number of deletions',usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(grp1cnvnum[,4]*10^6,grp2cnvnum[,4]*10^6))
+colnames(restable)[ncol(restable)]="numloh"
+
+outfig="EA_numloh_stringent_wilcox.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="numloh",datatable=restable,main='Number of LOH',usewilcox=T)
+dev.off()
+
+restable=cbind(restable,c(rowSums(grp1cnvnum[,2:4])*10^6,rowSums(grp2cnvnum[,2:4])*10^6))
+colnames(restable)[ncol(restable)]="numcnv"
+
+outfig="EA_numcnv_stringent_wilcox.png"
+png(outfig, width = 6, height = 4, units = 'in', res=300)
+plot2groups(item="numcnv",datatable=restable,main='Number of copy number alterations',usewilcox=T)
 dev.off()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#_________________________________
 
 
 #compute aa2ac mutation frequency
@@ -746,18 +1152,7 @@ counta2c=function(transratefiles,tumors,opt="a2c")
   return(res)
 }
 
-#cnv length count
-countcnvlength=function(cnvlenfile,tumors)
-{
-  res=data.frame(matrix(NA,ncol=4,nrow=length(tumors)))
-  colnames(res)=c("tumor","lengain","lenloss","lenloh")
-  res[,1]=tumors
-  tmp=read.table(cnvlenfile,header=T)
-  res[,2]=rowSums(tmp[,2:25])/10^6
-  res[,3]=rowSums(tmp[,26:49])/10^6
-  res[,4]=rowSums(tmp[,50:73])/10^6
-  return(res)
-}
+
 
 
 

@@ -28,20 +28,21 @@ fi
 
 if [[ $data == "henan" ]]
 then
+  #            0  1   2   3   4   5   6   7   8   9
   wgsnormals=(4A 12A 14A 16A 18A 26A 30A 34A 38A 42A)
   wgstumors=(3A 11A 13A 15A 17A 25A 29A 33A 37A 41A)
-  bamdir=/fh/scratch/delete30/dai_j/henan
-  #bamdir=/fh/scratch/delete30/dai_j/henan/newbam
+  #bamdir=/fh/scratch/delete30/dai_j/henan
+  bamdir=/fh/scratch/delete30/dai_j/henan/newbam
   outputdir=/fh/scratch/delete30/dai_j/henan/mutect1
   #outputdir=/fh/scratch/delete30/dai_j/henan/mutect3
   #outputdir=/fh/scratch/delete30/dai_j/henan/mutectnewq1
-  #outputdir=/fh/scratch/delete30/dai_j/henan/mutectnew
+  outputdir=/fh/scratch/delete30/dai_j/henan/mutectnew
   #mutect3: qmin=10,mapmin=10,q1
   #mutect1: qmin=10,mapmin=10,filtermap0=0 (q0)
  
 
-  for ((i=0;i<${#wgstumors[@]};i++))
-  #for ((i=1;i<2;i++))
+  #for ((i=0;i<${#wgstumors[@]};i++))
+  for i in {3,4,7,8,9}
   do
     normalbam=$bamdir/${wgsnormals[$i]}.merged.deduprealigned.bam
     tumorbam=$bamdir/${wgstumors[$i]}.merged.deduprealigned.bam

@@ -20,6 +20,8 @@ output="dulak_varscan_lego.txt"
 wgstumors=c("SRR1001842","SRR1002713","SRR999423","SRR1001466","SRR1002670","SRR1001823","SRR999489","SRR1002343","SRR1002722","SRR1002656",
             "SRR1002929","SRR999438","SRR1001915","SRR999594","SRR1001868","SRR1001635")
 
+mutationdir="/fh/scratch/delete30/dai_j/mutect1"
+output="dulak_mutect1_lego.txt"
 
 for (i in 1:length(wgstumors))
 {

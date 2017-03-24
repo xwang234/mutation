@@ -431,6 +431,7 @@ wgstumors=c("SRR1001842","SRR1002713","SRR999423","SRR1001466","SRR1002670","SRR
 #/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/37A.variant_function 3 4 6 7 F 37A 0
 #/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/henan/mutect3/41A.variant_function 3 4 6 7 F 41A 0
 
+#/fh/fast/dai_j/CancerGenomics/Tools/wang/mutation/count6mutations.R /fh/scratch/delete30/dai_j/mutect1/SRR1001635.variant_function 3 4 6 7 F SRR1001635 0
 
 
 

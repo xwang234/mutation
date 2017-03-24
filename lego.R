@@ -95,7 +95,9 @@ context3d=function(z,alpha=1,scalexy=10,scalez=1,gap=0.2,filename="graph"){
   }
   ## Set the viewpoint and add axes and labels
   rgl.viewpoint(theta=50,phi=40,fov=0,scale=c(1,0.9,1))
-  axes3d("y-+",labels=TRUE,at=c(0,20,40,60,80))
+  #axes3d("y-+",labels=TRUE,at=c(0,20,40,60))
+  ats=seq(0,ceiling(max(counts)/10)*10,10)
+  axes3d("y-+",labels=TRUE,at=ats)
   filename=paste0(filename,".pdf")
   rgl.postscript(filename, fmt="pdf")
 }
@@ -150,6 +152,7 @@ rawdata=read.table("/fh/scratch/delete30/dai_j/varscan2/dulak_varscan_lego.txt",
 rawdata=read.table("/fh/scratch/delete30/dai_j/mutect1/dulak.lego.txt",header=T)
 numsample=16
 
+rawdata=read.table("/fh/scratch/delete30/dai_j/mutect1/dulak_mutect1_lego.txt",header=T)
 
 counts0=as.numeric(rawdata)
 names(counts0)=colnames(rawdata)
@@ -173,6 +176,9 @@ context3d(z=counts,filename="/fh/scratch/delete30/dai_j/escc/varscan2/escc_varsc
 #dulak data
 context3d(z=counts,filename="/fh/scratch/delete30/dai_j/varscan2/dulak_varscan_lego")
 context3d(z=counts,filename="/fh/scratch/delete30/dai_j/mutect1/dulak_lego")
+
+context3d(z=counts,filename="/fh/scratch/delete30/dai_j/mutect1/dulak_mutect1_lego")
+
 
 context3d(counts,alpha=0.4)
 
