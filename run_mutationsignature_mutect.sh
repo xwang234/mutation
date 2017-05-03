@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-data="golden4"
+data="henan"
 colchr=3
 colstart=4
 colref=6
@@ -9,8 +9,8 @@ colsamplename=27
 
 if [[ $data == "henan" ]]
 then
-  mutectdir=/fh/scratch/delete30/dai_j/henan/mutect3
-  pref=henan_mutect3
+  mutectdir=/fh/scratch/delete30/dai_j/henan/mutect5
+  pref=henan_mutect5
   tumors=()
   tumors=(3A 11A 13A 15A 17A 25A 29A 33A 37A 41A)
 fi

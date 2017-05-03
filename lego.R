@@ -120,6 +120,28 @@ compute_trinucleotide_freq=function(counts,trinucleotidetable,numsample)
   }
   return(res)
 }
+
+library(BSgenome.Hsapiens.UCSC.hg19)
+genome=getSeq(BSgenome.Hsapiens.UCSC.hg19)
+trinuctable=trinucleotideFrequency(genome)
+compute_trinucleotide_freq1=function(counts0,trinuctable,numsample)
+{
+  res=counts0
+  for (i in 1:length(counts0))
+  {
+    myname=names(counts0)[i]
+    tmp=unlist(strsplit(myname,"_"))
+    tmp1=unlist(strsplit(tmp,".",fixed=T))
+    tmp2=unlist(strsplit(tmp1[5],"x"))
+    tri1=paste0(tmp2[1],tmp1[1],tmp2[2])
+    tri2=paste0(tmp2[1],tmp1[3],tmp2[2])
+    count1=sum(trinuctable[,colnames(trinuctable)==tri1])
+    count2=sum(trinuctable[,colnames(trinuctable)==tri2])
+    count=count1+count2
+    res[i]=counts0[i]/count/numsample*10^6
+  }
+  return(res)
+}
 # Example:
 # context3d(counts)
 
@@ -134,13 +156,14 @@ rawdata=read.table("all.exonic.lego.txt",header=TRUE)
 rawdata=read.table("all.lego.txt",header=TRUE)
 rawdata=read.table("/fh/scratch/delete30/dai_j/henan/varscan1/henan_varscan_lego.txt",header=T)
 #henan data:
-rawdata=read.table("/fh/scratch/delete30/dai_j/henan/varscan2/henan_varscan_lego.txt",header=T)
+#rawdata=read.table("/fh/scratch/delete30/dai_j/henan/varscan2/henan_varscan_lego.txt",header=T)
 numsample=10
 #golden4:
-rawdata=read.table("/fh/scratch/delete30/dai_j/henan/varscan2/henan_golden4_varscan_lego.txt",header=T)
+#rawdata=read.table("/fh/scratch/delete30/dai_j/henan/varscan2/henan_golden4_varscan_lego.txt",header=T)
 numsample=4
 
-rawdata=read.table("/fh/scratch/delete30/dai_j/henan/mutect3/henan_mutect3_lego.txt",header=T)
+#rawdata=read.table("/fh/scratch/delete30/dai_j/henan/mutect3/henan_mutect3_lego.txt",header=T)
+rawdata=read.table("/fh/scratch/delete30/dai_j/henan/mutect4/all_lego.txt",header=T)
 numsample=10
 
 #escc data:
@@ -148,24 +171,23 @@ rawdata=read.table("/fh/scratch/delete30/dai_j/escc/varscan2/escc_varscan_lego.t
 numsample=17
 
 #dulak data:
-rawdata=read.table("/fh/scratch/delete30/dai_j/varscan2/dulak_varscan_lego.txt",header=T)
-rawdata=read.table("/fh/scratch/delete30/dai_j/mutect1/dulak.lego.txt",header=T)
+#rawdata=read.table("/fh/scratch/delete30/dai_j/varscan2/dulak_varscan_lego.txt",header=T)
 numsample=16
-
-rawdata=read.table("/fh/scratch/delete30/dai_j/mutect1/dulak_mutect1_lego.txt",header=T)
+rawdata=read.table("/fh/scratch/delete30/dai_j/mutect4/all_lego.txt",header=T)
 
 counts0=as.numeric(rawdata)
 names(counts0)=colnames(rawdata)
 
-counts=compute_trinucleotide_freq(counts0,trinucleotidetable,numsample)
+#counts=compute_trinucleotide_freq(counts0,trinucleotidetable,numsample)
+counts=compute_trinucleotide_freq1(counts0,trinuctable,numsample)
 ## Example plots
 
-context3d(z=counts,filename="dulak.all.exonic.lego" )
-context3d(z=counts,filename="dulak.all.lego")
-context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/varscan1/henan_varscan_lego" )
+#context3d(z=counts,filename="dulak.all.exonic.lego" )
+#context3d(z=counts,filename="dulak.all.lego")
+#context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/varscan1/henan_varscan_lego" )
 #henan data
-context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/varscan2/henan_varscan_lego")
-context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/mutect3/henan_mutect3_lego")
+#context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/varscan2/henan_varscan_lego")
+context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/mutect4/henan_mutect4_lego")
 
 #golden4
 context3d(z=counts,filename="/fh/scratch/delete30/dai_j/henan/varscan2/henan_golden4_varscan_lego")
@@ -175,10 +197,7 @@ context3d(z=counts,filename="/fh/scratch/delete30/dai_j/escc/varscan2/escc_varsc
 
 #dulak data
 context3d(z=counts,filename="/fh/scratch/delete30/dai_j/varscan2/dulak_varscan_lego")
-context3d(z=counts,filename="/fh/scratch/delete30/dai_j/mutect1/dulak_lego")
-
-context3d(z=counts,filename="/fh/scratch/delete30/dai_j/mutect1/dulak_mutect1_lego")
-
+context3d(z=counts,filename="/fh/scratch/delete30/dai_j/mutect4/dulak_mutect4_lego")
 
 context3d(counts,alpha=0.4)
 
